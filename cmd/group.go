@@ -27,7 +27,7 @@ import (
 
 var filterApp *string
 
-func templateApp(app string, inputFilePath string, appGroupDir string) error {
+func templateApp(app string, inputFilePath string, appGroupDir string, lint bool) error {
 
 	targeAppDir := pkg.ConcatDir(appGroupDir, app)
 
@@ -35,7 +35,7 @@ func templateApp(app string, inputFilePath string, appGroupDir string) error {
 	if err != nil {
 		return fmt.Errorf("create app dir: %w", err)
 	}
-	if *lint {
+	if lint {
 		err = engine.Lint(app, inputFilePath)
 		if err != nil {
 			return fmt.Errorf("linting: %w", err)
@@ -46,15 +46,10 @@ func templateApp(app string, inputFilePath string, appGroupDir string) error {
 		return fmt.Errorf("templating: %w", err)
 	}
 
-	err = engine.Template(app, inputFilePath, targeAppDir)
-	if err != nil {
-		return fmt.Errorf("templating: %w", err)
-	}
-
 	return nil
 }
 
-func iterateOnAppGroup(group string) error {
+func iterateOnAppGroup(group string, lint bool, dryRun bool) error {
 	appGroupDir := pkg.ConcatDir(namespaceDir, group)
 	targetAppGroupDir := pkg.ConcatDir(targetNamespaceDir, group)
 
@@ -76,7 +71,7 @@ func iterateOnAppGroup(group string) error {
 				}
 			}
 
-			err = templateApp(app, matchedAppFile, targetAppGroupDir)
+			err = templateApp(app, matchedAppFile, targetAppGroupDir, lint)
 			if err != nil {
 				return fmt.Errorf("apply app: %w", err)
 			}
@@ -84,7 +79,7 @@ func iterateOnAppGroup(group string) error {
 		}
 
 	}
-	if !*dryRun {
+	if !dryRun {
 		if *filterApp != "" {
 			err = kapp.DeployApp(group+"-"+*filterApp, targetAppGroupDir+"/"+*filterApp, *namespace, nil)
 			if err != nil {
@@ -106,9 +101,14 @@ func iterateOnAppGroup(group string) error {
 var groupCmd = &cobra.Command{
 	Use:   "group",
 	Short: "App group command",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		err := iterateOnAppGroup(args[0])
+		lint, _ := cmd.Flags().GetBool("lint")
+
+		dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+		err := iterateOnAppGroup(args[0], lint, dryRun)
 		if err != nil {
 			return fmt.Errorf("iterate app group: %w", err)
 		}
@@ -120,6 +120,6 @@ var groupCmd = &cobra.Command{
 func init() {
 	applyCmd.AddCommand(groupCmd)
 
-	filterApp = groupCmd.LocalFlags().StringP("app", "a", "", "Filter single app from this group")
+	filterApp = groupCmd.Flags().StringP("app", "a", "", "Filter single app from this group")
 
 }

@@ -27,10 +27,6 @@ import (
 )
 
 var engine template.TemplateEngine
-var lint *bool
-var dryRun *bool
-
-var _engineName *string
 
 var targetNamespaceDir string
 var namespaceDir string
@@ -66,14 +62,19 @@ var applyCmd = &cobra.Command{
 			return errors.New("cannot create working directory")
 		}
 
-		switch e := *_engineName; e {
+		_engineName, _ := cmd.Flags().GetString("template-engine")
+
+		switch e := _engineName; e {
 		case "helmfile":
 			engine = template.NewHelmFileEngine(template.GenericOpts{
 				Environment: *environment,
 				Namespace:   *environment,
 			})
 		case "kontemplate":
-			fmt.Println("Linux.")
+			engine = template.NewHelmFileEngine(template.GenericOpts{
+				Environment: *environment,
+				Namespace:   *environment,
+			})
 
 		}
 
@@ -84,8 +85,8 @@ var applyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(applyCmd)
 
-	_engineName = applyCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
-	lint = applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
-	dryRun = applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
+	applyCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
+	applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
+	applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
 
 }
