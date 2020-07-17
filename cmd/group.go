@@ -25,7 +25,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var group *string
 var filterApp *string
 
 func templateApp(app string, inputFilePath string, appGroupDir string) error {
@@ -85,17 +84,19 @@ func iterateOnAppGroup(group string) error {
 		}
 
 	}
-	if *filterApp != "" {
-		err = kapp.DeployApp(group+"-"+*filterApp, targetAppGroupDir+"/"+*filterApp, *namespace, nil)
-		if err != nil {
-			return fmt.Errorf("kapp app deploy: %w", err)
+	if !*dryRun {
+		if *filterApp != "" {
+			err = kapp.DeployApp(group+"-"+*filterApp, targetAppGroupDir+"/"+*filterApp, *namespace, nil)
+			if err != nil {
+				return fmt.Errorf("kapp app deploy: %w", err)
+			}
+			return nil
 		}
-		return nil
-	}
 
-	err = kapp.DeployGroup(group, targetAppGroupDir, *namespace, nil)
-	if err != nil {
-		return fmt.Errorf("kapp group deploy: %w", err)
+		err = kapp.DeployGroup(group, targetAppGroupDir, *namespace, nil)
+		if err != nil {
+			return fmt.Errorf("kapp group deploy: %w", err)
+		}
 	}
 
 	return nil
@@ -119,6 +120,6 @@ var groupCmd = &cobra.Command{
 func init() {
 	applyCmd.AddCommand(groupCmd)
 
-	filterApp = groupCmd.Flags().StringP("app", "a", "", "Filter single app from this group")
+	filterApp = groupCmd.LocalFlags().StringP("app", "a", "", "Filter single app from this group")
 
 }

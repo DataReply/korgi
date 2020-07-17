@@ -19,6 +19,20 @@
              "envFile": "${workspaceRoot}/.dev.env",
              "args": ["apply", "-e","dev", "-n", "default","group","--lint","--app","dummy","monitoring"],
             "showLog": true
+        },
+        {
+            "name": "Launch Delete",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "remotePath": "",
+            "cwd": "${workspaceRoot}",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "program": "${workspaceRoot}/main.go",
+             "envFile": "${workspaceRoot}/.dev.env",
+             "args": ["delete", "-e","dev", "-n", "default","--app","test","monitoring"],
+            "showLog": true
         }
     ]
 }
