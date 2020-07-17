@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/DataReply/kapply/pkg/exec"
+	"github.com/DataReply/kapply/pkg/template"
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -27,20 +29,41 @@ import (
 
 var cfgFile string
 
-var namespace *string
-var environment *string
+var templateEngine template.TemplateEngine
+var execEngine exec.ExecEngine
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "kapply",
 	Short: "DRY Kubernetes Deployments with kapp, helmfile and kontemplate",
-	Long:  `Does many amazing things`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	PreRunE: func(cmd *cobra.Command, args []string) error {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+
+		_engineName, _ := cmd.Flags().GetString("template-engine")
+		templateExtraArgs, _ := cmd.Flags().GetStringArray("template-engine-args")
+		execExtraArgs, _ := cmd.Flags().GetStringArray("exec-engine-args")
+
+		environment, _ := cmd.Flags().GetString("environment")
+
+		execEngine = exec.NewKappEngine(exec.Opts{
+			ExtraArgs: execExtraArgs,
+		})
+
+		switch e := _engineName; e {
+		case "helmfile":
+			templateEngine = template.NewHelmFileEngine(template.Opts{
+				Environment: environment,
+				ExtraArgs:   templateExtraArgs,
+			})
+		case "kontemplate":
+			templateEngine = template.NewKontemplateEngine(template.Opts{
+				Environment: environment,
+				ExtraArgs:   templateExtraArgs,
+			})
+		default:
+			return fmt.Errorf("%s template engine is not supported", _engineName)
+		}
 
 		return nil
-
 	},
 }
 
@@ -49,29 +72,25 @@ var rootCmd = &cobra.Command{
 func Execute() {
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error: %s \n", err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	//cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.PersistentFlags().StringP("environment", "e", "", "Target environment")
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kapply.yaml)")
+	rootCmd.PersistentFlags().StringP("working-dir", "w", "/tmp/kapp", "Working directory")
+	rootCmd.PersistentFlags().StringP("filter", "f", "", "Filter to include a single app")
+	rootCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
 
-	namespace = rootCmd.PersistentFlags().StringP("namespace", "n", "", "Target namespace")
-	environment = rootCmd.PersistentFlags().StringP("environment", "e", "", "Target environment")
+	rootCmd.PersistentFlags().StringArray("exec-engine-args", []string{}, "Execution engine extra args(only kapp is supported)s")
+	rootCmd.PersistentFlags().StringArray("template-engine-args", []string{}, "Template engine extra args")
 
-	rootCmd.MarkFlagRequired("namespace")
 	rootCmd.MarkFlagRequired("environment")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

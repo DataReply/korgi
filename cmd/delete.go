@@ -18,9 +18,24 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/DataReply/kapply/pkg/kapp"
 	"github.com/spf13/cobra"
 )
+
+func deleteAppGroup(group string, namespace string, filter string) error {
+	if filter != "" {
+		err := execEngine.DeleteApp(group+"-"+filter, namespace)
+		if err != nil {
+			return fmt.Errorf("kapp app delete: %w", err)
+		}
+		return nil
+	}
+
+	err := execEngine.DeleteGroup(group, namespace)
+	if err != nil {
+		return fmt.Errorf("kapp group delete: %w", err)
+	}
+	return nil
+}
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
@@ -30,18 +45,13 @@ var deleteCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		group := args[0]
 
-		filter, _ := cmd.Flags().GetString("app")
-		if filter != "" {
-			err := kapp.DeleteApp(group+"-"+filter, *namespace, nil)
-			if err != nil {
-				return fmt.Errorf("kapp app delete: %w", err)
-			}
-			return nil
-		}
+		namespace, _ := cmd.Flags().GetString("namespace")
 
-		err := kapp.DeleteGroup(group, *namespace, nil)
+		filter, _ := cmd.Flags().GetString("filter")
+
+		err := deleteAppGroup(group, namespace, filter)
 		if err != nil {
-			return fmt.Errorf("kapp group delete: %w", err)
+			return err
 		}
 
 		return nil
@@ -51,6 +61,7 @@ var deleteCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(deleteCmd)
 
-	deleteCmd.Flags().StringP("app", "a", "", "Filter single app from this group")
+	deleteCmd.Flags().StringP("namespace", "n", "", "Target namespace")
+	deleteCmd.MarkFlagRequired("namespace")
 
 }

@@ -16,66 +16,115 @@ limitations under the License.
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/DataReply/kapply/pkg"
-	"github.com/DataReply/kapply/pkg/template"
 	"github.com/spf13/cobra"
 )
 
-var engine template.TemplateEngine
+func templateApp(app string, inputFilePath string, appGroupDir string, lint bool) error {
 
-var targetNamespaceDir string
-var namespaceDir string
+	targeAppDir := pkg.ConcatDirs(appGroupDir, app)
+
+	err := os.MkdirAll(targeAppDir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("creating app dir: %w", err)
+	}
+	if lint {
+		err = templateEngine.Lint(app, inputFilePath)
+		if err != nil {
+			return err
+		}
+	}
+	err = templateEngine.Template(app, inputFilePath, targeAppDir)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deployAppGroup(group string, namespace string, workingDir string, filter string, lint bool, dryRun bool) error {
+
+	namespaceDir := pkg.GetNamespaceDir(namespace)
+	if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
+		return fmt.Errorf("%s directory does not exist", namespaceDir)
+	}
+
+	appGroupDir := pkg.ConcatDirs(namespaceDir, group)
+
+	targetAppGroupDir := pkg.ConcatDirs(workingDir, time.Now().Format("2006-01-02/15-04:05"), namespace, group)
+
+	err := os.MkdirAll(targetAppGroupDir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("creating group directory: %w", err)
+	}
+
+	matches, err := filepath.Glob(appGroupDir + "/*")
+	if err != nil {
+		return fmt.Errorf("listing group directory: %w", err)
+	}
+
+	for _, matchedAppFile := range matches {
+		appFile := filepath.Base(matchedAppFile)
+		if appFile != "_app_group.yaml" {
+			app := pkg.SanitzeAppName(appFile)
+			if filter != "" {
+
+				if app != filter {
+					continue
+				}
+			}
+
+			err = templateApp(app, matchedAppFile, targetAppGroupDir, lint)
+			if err != nil {
+				return fmt.Errorf("templating app: %w", err)
+			}
+
+		}
+
+	}
+	if !dryRun {
+		if filter != "" {
+			err = execEngine.DeployApp(group+"-"+filter, pkg.ConcatDirs(targetAppGroupDir, filter), namespace)
+			if err != nil {
+				return fmt.Errorf("running kapp deploy with filter: %w", err)
+			}
+			return nil
+		}
+
+		err = execEngine.DeployGroup(group, targetAppGroupDir, namespace)
+		if err != nil {
+			return fmt.Errorf("running kapp deploy: %w", err)
+		}
+	}
+
+	return nil
+}
 
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
 	Use:   "apply",
 	Short: "Apply resources to k8s",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	Args:  cobra.MinimumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		dir, _ := os.Getwd()
+		namespace, _ := cmd.Flags().GetString("namespace")
 
-		realmDir := pkg.ConcatDir(dir, "realm")
-		namespacesDir := pkg.ConcatDir(realmDir, "namespaces")
-		namespaceDir = pkg.ConcatDir(namespacesDir, *namespace)
+		lint, _ := cmd.Flags().GetBool("lint")
 
-		if _, err := os.Stat(realmDir); os.IsNotExist(err) {
-			return errors.New("realm directory does not exist")
-		}
-		if _, err := os.Stat(namespacesDir); os.IsNotExist(err) {
-			return errors.New("namespaces directory does not exist")
-		}
-		if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
-			return fmt.Errorf("%s directory does not exist", namespaceDir)
-		}
+		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
-		parentDir := fmt.Sprintf("/tmp/kapp/%s", time.Now().Format("2006-01-02/15-04:05"))
+		filter, _ := cmd.Flags().GetString("filter")
 
-		targetNamespaceDir = pkg.ConcatDir(parentDir, *namespace)
+		workingDir, _ := cmd.Flags().GetString("working-dir")
 
-		err := os.MkdirAll(parentDir, os.ModePerm)
+		err := deployAppGroup(args[0], namespace, workingDir, filter, lint, dryRun)
 		if err != nil {
-			return errors.New("cannot create working directory")
-		}
-
-		_engineName, _ := cmd.Flags().GetString("template-engine")
-
-		switch e := _engineName; e {
-		case "helmfile":
-			engine = template.NewHelmFileEngine(template.GenericOpts{
-				Environment: *environment,
-				Namespace:   *environment,
-			})
-		case "kontemplate":
-			engine = template.NewHelmFileEngine(template.GenericOpts{
-				Environment: *environment,
-				Namespace:   *environment,
-			})
-
+			return err
 		}
 
 		return nil
@@ -85,8 +134,9 @@ var applyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(applyCmd)
 
-	applyCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
-	applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
+	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
+	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
+	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
+	applyCmd.MarkFlagRequired("namespace")
 
 }

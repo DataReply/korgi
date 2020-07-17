@@ -20,7 +20,7 @@ RUN make bin
 # final image
 FROM alpine:3.10.1
 
-COPY --from=builder  /app/bin/linux/${APP} /bin/${APP}
+COPY --from=builder  /app/bin/linux/kapply /bin/kapply
 
 RUN set -ex && apk --update --no-cache add \
     curl \
@@ -28,4 +28,4 @@ RUN set -ex && apk --update --no-cache add \
     ca-certificates \
     && update-ca-certificates
 
-ENTRYPOINT ["/bin/simulator"]
+ENTRYPOINT ["/bin/kapply"]

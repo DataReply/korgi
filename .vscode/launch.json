@@ -5,7 +5,20 @@
     "version": "0.2.0",
     "configurations": [
     
-         
+        {
+            "name": "Launch Namespace",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "remotePath": "",
+            "cwd": "${workspaceRoot}",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "program": "${workspaceRoot}/main.go",
+             "envFile": "${workspaceRoot}/.dev.env",
+             "args": ["apply-namespace", "-e","dev","--lint","default"],
+            "showLog": true
+        },
         {
             "name": "Launch",
             "type": "go",

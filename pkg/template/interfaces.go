@@ -9,7 +9,7 @@ type TemplateEngine interface {
 	Lint(name string, inputFilePath string) error
 }
 
-type GenericOpts struct {
+type Opts struct {
 	Environment string
-	Namespace   string
+	ExtraArgs   []string
 }
