@@ -19,23 +19,23 @@ Supported execution engines:
 
 # Examples
 
-Apply a group in namespace `default` and env `dev`:
+Apply all groups in namespace `default` and env `dev`:
 
 ```
 kapply apply-namespace -e dev default
 ```
 
 
-Apply all group in namespace `default` and env `dev`:
+Apply a group in namespace `default` and env `dev`:
 
 ```
-kapply apply-namespace -e dev -n default monitoring
+kapply apply -e dev -n default monitoring
 ```
 
 Apply a single app from the `monitoring` group in namespace `default` and env `dev`:
 
 ```
-kapply apply-namespace -e dev -n default -f dummy monitoring
+kapply apply -e dev -n default -f dummy monitoring
 ```
 
 Passing extra args to the engines:
