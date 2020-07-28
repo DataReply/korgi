@@ -1,4 +1,4 @@
-# kapply
+# korgi
 
 Tool to chain templating engine for k8s and execution engions for k8s. Depends on a very opinionated deployment structure:
 
@@ -22,30 +22,30 @@ Supported execution engines:
 Apply all groups in namespace `default` and env `dev`:
 
 ```
-kapply apply-namespace -e dev default
+korgi apply-namespace -e dev default
 ```
 
 
 Apply a group in namespace `default` and env `dev`:
 
 ```
-kapply apply -e dev -n default monitoring
+korgi apply -e dev -n default monitoring
 ```
 
 Apply a single app from the `monitoring` group in namespace `default` and env `dev`:
 
 ```
-kapply apply -e dev -n default -f dummy monitoring
+korgi apply -e dev -n default -f dummy monitoring
 ```
 
 Passing extra args to the engines:
 
 ```
-kapply --template-engine-args "--skip-deps" --exec-engine-args "--color=false" apply-namespace default
+korgi --template-engine-args "--skip-deps" --exec-engine-args "--color=false" apply-namespace default
 ```
 
 Delete a single group:
 
 ```
-kapply delete -e dev -n default monitoring
+korgi delete -e dev -n default monitoring
 ```

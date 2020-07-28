@@ -1,4 +1,4 @@
-PROJECT_NAME :=kapply
+PROJECT_NAME :=korgi
 GOFILES:=$(shell find . -name '*.go' | grep -v -E '(./vendor)')
  
 run:
@@ -9,7 +9,7 @@ all: clean check bin
 
 bin: $(GOFILES)
 	mkdir -p  bin/linux/
-	GOOS=linux GOARCH=amd64 go build -a -tags musl -ldflags "$(LDFLAGS)" -o bin/linux/kapply main.go
+	GOOS=linux GOARCH=amd64 go build -a -tags musl -ldflags "$(LDFLAGS)" -o bin/linux/korgi main.go
 
 gofmt:
 	gofmt -w -s pkg/

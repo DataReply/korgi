@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/DataReply/kapply/cmd"
+import "github.com/DataReply/korgi/cmd"
 
 func main() {
 	cmd.Execute()

@@ -20,8 +20,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/DataReply/kapply/pkg/exec"
-	"github.com/DataReply/kapply/pkg/template"
+	"github.com/DataReply/korgi/pkg/exec"
+	"github.com/DataReply/korgi/pkg/template"
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -36,7 +36,7 @@ var execEngine exec.ExecEngine
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "kapply",
+	Use:   "korgi",
 	Short: "DRY Kubernetes Deployments with kapp, helmfile and kontemplate",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 
@@ -110,9 +110,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".kapply" (without extension).
+		// Search config in home directory with name ".korgi" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".kapply")
+		viper.SetConfigName(".korgi")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

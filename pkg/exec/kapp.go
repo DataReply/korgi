@@ -1,7 +1,7 @@
 package exec
 
 import (
-	"github.com/DataReply/kapply/pkg"
+	"github.com/DataReply/korgi/pkg"
 	"github.com/codeskyblue/go-sh"
 )
 

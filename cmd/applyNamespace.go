@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DataReply/kapply/pkg"
+	"github.com/DataReply/korgi/pkg"
 	"github.com/spf13/cobra"
 )
 

@@ -1,4 +1,4 @@
-module github.com/DataReply/kapply
+module github.com/DataReply/korgi
 
 go 1.14
 
