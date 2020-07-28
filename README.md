@@ -1,7 +1,10 @@
-# korgi
+# korgi - k8s organizer
+
+
+Very early release, use at your own discretion.
 
 Tool to chain templating engine for k8s and execution engions for k8s. Depends on a very opinionated deployment structure:
-
+```
 realm
    namespaces
         namespace
@@ -9,7 +12,7 @@ realm
                 _app_group.yaml
                 app1.yaml
                 app2.yaml
-
+```
 Supported templating engines:
 - helmfile
 - kontemplate
