@@ -1,0 +1,17 @@
+
+
+releases:
+  - name: test1
+    chart: incubator/raw  
+    version: 0.2.3
+    values:
+    - templates:
+      - |
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: test1
+    
+   
+  
+    
