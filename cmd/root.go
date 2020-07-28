@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/DataReply/kapply/pkg/exec"
 	"github.com/DataReply/kapply/pkg/template"
@@ -29,6 +30,7 @@ import (
 
 var cfgFile string
 
+var execTime time.Time
 var templateEngine template.TemplateEngine
 var execEngine exec.ExecEngine
 
@@ -78,6 +80,8 @@ func Execute() {
 }
 
 func init() {
+
+	execTime = time.Now()
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringP("environment", "e", "", "Target environment")

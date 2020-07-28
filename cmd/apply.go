@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/DataReply/kapply/pkg"
 	"github.com/spf13/cobra"
@@ -56,7 +55,7 @@ func deployAppGroup(group string, namespace string, workingDir string, filter st
 
 	appGroupDir := pkg.ConcatDirs(namespaceDir, group)
 
-	targetAppGroupDir := pkg.ConcatDirs(workingDir, time.Now().Format("2006-01-02/15-04:05"), namespace, group)
+	targetAppGroupDir := pkg.ConcatDirs(workingDir, execTime.Format("2006-01-02/15-04:05"), namespace, group)
 
 	err := os.MkdirAll(targetAppGroupDir, os.ModePerm)
 	if err != nil {
