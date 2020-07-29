@@ -1,7 +1,14 @@
-# korgi - k8s organizer
+# korgi - k8s organizer 
 
+<p align="center">
+  <img src="https://emojis.slackmojis.com/emojis/images/1488330086/1793/party-corgi.gif?1488330086">
+   </br>
+   Fetches your templated manifests and delivers it to Kapp like a good boi
+</p>
 
-Very early release, use at your own discretion.
+---
+
+### WARNING: Very early release, use at your own discretion.
 
 Tool to chain templating engine for k8s and execution engions for k8s. Depends on a very opinionated deployment structure:
 ```
