@@ -21,9 +21,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func deleteAppGroup(group string, namespace string, filter string) error {
-	if filter != "" {
-		err := execEngine.DeleteApp(group+"-"+filter, namespace)
+func deleteAppGroup(group string, namespace string, appFilter string) error {
+	if appFilter != "" {
+		err := execEngine.DeleteApp(group+"-"+appFilter, namespace)
 		if err != nil {
 			return fmt.Errorf("kapp app delete: %w", err)
 		}
@@ -47,9 +47,9 @@ var deleteCmd = &cobra.Command{
 
 		namespace, _ := cmd.Flags().GetString("namespace")
 
-		filter, _ := cmd.Flags().GetString("filter")
+		appFilter, _ := cmd.Flags().GetString("app")
 
-		err := deleteAppGroup(group, namespace, filter)
+		err := deleteAppGroup(group, namespace, appFilter)
 		if err != nil {
 			return err
 		}

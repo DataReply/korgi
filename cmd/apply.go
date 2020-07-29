@@ -20,13 +20,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DataReply/korgi/pkg"
+	"github.com/DataReply/korgi/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
 func templateApp(app string, inputFilePath string, appGroupDir string, lint bool) error {
 
-	targeAppDir := pkg.ConcatDirs(appGroupDir, app)
+	targeAppDir := utils.ConcatDirs(appGroupDir, app)
 
 	err := os.MkdirAll(targeAppDir, os.ModePerm)
 	if err != nil {
@@ -46,16 +46,17 @@ func templateApp(app string, inputFilePath string, appGroupDir string, lint bool
 	return nil
 }
 
-func deployAppGroup(group string, namespace string, workingDir string, filter string, lint bool, dryRun bool) error {
+func deployAppGroup(group string, namespace string, workingDir string, appFilter string, lint bool, dryRun bool) error {
 
-	namespaceDir := pkg.GetNamespaceDir(namespace)
+	log.V(0).Info("deploying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun)
+	namespaceDir := utils.GetNamespaceDir(namespace)
 	if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
 		return fmt.Errorf("%s directory does not exist", namespaceDir)
 	}
 
-	appGroupDir := pkg.ConcatDirs(namespaceDir, group)
+	appGroupDir := utils.ConcatDirs(namespaceDir, group)
 
-	targetAppGroupDir := pkg.ConcatDirs(workingDir, execTime.Format("2006-01-02/15-04:05"), namespace, group)
+	targetAppGroupDir := utils.ConcatDirs(workingDir, execTime.Format("2006-01-02/15-04:05"), namespace, group)
 
 	err := os.MkdirAll(targetAppGroupDir, os.ModePerm)
 	if err != nil {
@@ -70,10 +71,10 @@ func deployAppGroup(group string, namespace string, workingDir string, filter st
 	for _, matchedAppFile := range matches {
 		appFile := filepath.Base(matchedAppFile)
 		if appFile != "_app_group.yaml" {
-			app := pkg.SanitzeAppName(appFile)
-			if filter != "" {
+			app := utils.SanitzeAppName(appFile)
+			if appFilter != "" {
 
-				if app != filter {
+				if app != appFilter {
 					continue
 				}
 			}
@@ -87,10 +88,10 @@ func deployAppGroup(group string, namespace string, workingDir string, filter st
 
 	}
 	if !dryRun {
-		if filter != "" {
-			err = execEngine.DeployApp(group+"-"+filter, pkg.ConcatDirs(targetAppGroupDir, filter), namespace)
+		if appFilter != "" {
+			err = execEngine.DeployApp(group+"-"+appFilter, utils.ConcatDirs(targetAppGroupDir, appFilter), namespace)
 			if err != nil {
-				return fmt.Errorf("running kapp deploy with filter: %w", err)
+				return fmt.Errorf("running kapp deploy with appFilter: %w", err)
 			}
 			return nil
 		}
@@ -117,11 +118,11 @@ var applyCmd = &cobra.Command{
 
 		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
-		filter, _ := cmd.Flags().GetString("filter")
+		appFilter, _ := cmd.Flags().GetString("app")
 
 		workingDir, _ := cmd.Flags().GetString("working-dir")
 
-		err := deployAppGroup(args[0], namespace, workingDir, filter, lint, dryRun)
+		err := deployAppGroup(args[0], namespace, workingDir, appFilter, lint, dryRun)
 		if err != nil {
 			return err
 		}

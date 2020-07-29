@@ -45,7 +45,7 @@ korgi apply -e dev -n default monitoring
 Apply a single app from the `monitoring` group in namespace `default` and env `dev`:
 
 ```
-korgi apply -e dev -n default -f dummy monitoring
+korgi apply -e dev -n default -a dummy monitoring
 ```
 
 Passing extra args to the engines:

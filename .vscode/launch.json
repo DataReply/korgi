@@ -15,7 +15,7 @@
             "port": 2345,
             "host": "127.0.0.1",
             "program": "${workspaceRoot}/main.go",
-             "envFile": "${workspaceRoot}/.dev.env",
+            //  "envFile": "${workspaceRoot}/.dev.env",
              "args": ["apply-namespace", "-e","dev","--lint","default"],
             "showLog": true
         },
@@ -29,7 +29,7 @@
             "port": 2345,
             "host": "127.0.0.1",
             "program": "${workspaceRoot}/main.go",
-             "envFile": "${workspaceRoot}/.dev.env",
+            //  "envFile": "${workspaceRoot}/.dev.env",
              "args": ["apply", "-e","dev", "-n", "default","group","--app","dummy","monitoring"],
             "showLog": true
         },
@@ -43,7 +43,7 @@
             "port": 2345,
             "host": "127.0.0.1",
             "program": "${workspaceRoot}/main.go",
-             "envFile": "${workspaceRoot}/.dev.env",
+            //  "envFile": "${workspaceRoot}/.dev.env",
              "args": ["delete", "-e","dev", "-n", "default","--app","test","monitoring"],
             "showLog": true
         }

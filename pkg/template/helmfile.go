@@ -17,37 +17,55 @@ package template
 
 import (
 	"fmt"
+	"os/exec"
 
-	"github.com/DataReply/korgi/pkg"
-	"github.com/codeskyblue/go-sh"
+	"github.com/DataReply/korgi/pkg/utils"
+	"github.com/go-logr/logr"
 )
 
 type HelmFileEngine struct {
 	Opts Opts
+	log  logr.Logger
 }
 
-func NewHelmFileEngine(Opts Opts) *HelmFileEngine {
-	return &HelmFileEngine{Opts}
+func NewHelmFileEngine(Opts Opts, log logr.Logger) *HelmFileEngine {
+	return &HelmFileEngine{Opts, log}
 }
+
 func (e *HelmFileEngine) Template(name string, inputFilePath string, outputFilePath string) error {
-	inputArgs := pkg.ExplodeArg(append([]string{"--environment", e.Opts.Environment,
+	inputArgs := append([]string{"--environment", e.Opts.Environment,
 		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name),
-		"template", "--output-dir", outputFilePath}, e.Opts.ExtraArgs...))
+		"template", "--output-dir", outputFilePath}, e.Opts.ExtraArgs...)
 
-	err := sh.Command("helmfile", inputArgs...).Run()
+	cmd := exec.Command("helmfile", inputArgs...)
+	print := func(in string) {
+		e.log.Info(in)
+	}
+
+	err := utils.ExecWithOutput(cmd, print, print)
+
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 func (e *HelmFileEngine) Lint(name string, inputFilePath string) error {
 
-	inputArgs := pkg.ExplodeArg(append([]string{"--environment", e.Opts.Environment,
-		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name), "lint"}, e.Opts.ExtraArgs...))
+	inputArgs := append([]string{"--environment", e.Opts.Environment,
+		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name), "lint"}, e.Opts.ExtraArgs...)
 
-	err := sh.Command("helmfile", inputArgs...).Run()
+	cmd := exec.Command("helmfile", inputArgs...)
+
+	print := func(in string) {
+		e.log.Info(in)
+	}
+
+	err := utils.ExecWithOutput(cmd, print, print)
+
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

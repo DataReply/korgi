@@ -16,25 +16,35 @@ limitations under the License.
 package template
 
 import (
-	"github.com/DataReply/korgi/pkg"
-	"github.com/codeskyblue/go-sh"
+	"os/exec"
+
+	"github.com/DataReply/korgi/pkg/utils"
+	"github.com/go-logr/logr"
 )
 
 type KontemplateEngine struct {
 	Opts Opts
+	log  logr.Logger
 }
 
-func NewKontemplateEngine(Opts Opts) *KontemplateEngine {
-	return &KontemplateEngine{Opts}
+func NewKontemplateEngine(Opts Opts, log logr.Logger) *KontemplateEngine {
+	return &KontemplateEngine{Opts, log}
 }
 func (e *KontemplateEngine) Template(name string, inputFilePath string, outputFilePath string) error {
 
-	inputArgs := pkg.ExplodeArg(append([]string{"template", inputFilePath, "-o", outputFilePath}, e.Opts.ExtraArgs...))
+	inputArgs := append([]string{"template", inputFilePath, "-o", outputFilePath}, e.Opts.ExtraArgs...)
 
-	err := sh.Command("kontemplate", inputArgs...).Run()
+	cmd := exec.Command("kontemplate", inputArgs...)
+	print := func(in string) {
+		e.log.Info(in)
+	}
+
+	err := utils.ExecWithOutput(cmd, print, print)
+
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 func (e *KontemplateEngine) Lint(name string, inputFilePath string) error {

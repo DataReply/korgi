@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DataReply/korgi/pkg"
+	"github.com/DataReply/korgi/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -30,11 +30,11 @@ var deleteNamespaceCmd = &cobra.Command{
 	Short: "Namespace apply",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		filter, _ := cmd.Flags().GetString("filter")
+		appFilter, _ := cmd.Flags().GetString("app")
 
 		namespace := args[0]
 
-		namespaceDir := pkg.GetNamespaceDir(namespace)
+		namespaceDir := utils.GetNamespaceDir(namespace)
 		if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
 			return fmt.Errorf("%s directory does not exist", namespaceDir)
 		}
@@ -43,7 +43,7 @@ var deleteNamespaceCmd = &cobra.Command{
 
 			if info.IsDir() && path != namespaceDir {
 				group := filepath.Base(path)
-				err := deleteAppGroup(group, namespace, filter)
+				err := deleteAppGroup(group, namespace, appFilter)
 				if err != nil {
 					return err
 				}

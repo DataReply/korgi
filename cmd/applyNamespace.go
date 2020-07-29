@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DataReply/korgi/pkg"
+	"github.com/DataReply/korgi/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -34,13 +34,13 @@ var namespaceCmd = &cobra.Command{
 
 		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
-		filter, _ := cmd.Flags().GetString("filter")
+		appFilter, _ := cmd.Flags().GetString("app")
 
 		workingDir, _ := cmd.Flags().GetString("working-dir")
 
 		namespace := args[0]
 
-		namespaceDir := pkg.GetNamespaceDir(namespace)
+		namespaceDir := utils.GetNamespaceDir(namespace)
 		if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
 			return errors.New("namespaces directory does not exist")
 		}
@@ -49,7 +49,7 @@ var namespaceCmd = &cobra.Command{
 
 			if info.IsDir() && path != namespaceDir {
 				group := filepath.Base(path)
-				err := deployAppGroup(group, namespace, workingDir, filter, lint, dryRun)
+				err := deployAppGroup(group, namespace, workingDir, appFilter, lint, dryRun)
 				if err != nil {
 					return err
 				}

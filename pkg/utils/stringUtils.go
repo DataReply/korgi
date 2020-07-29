@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package pkg
+package utils
 
 import (
 	"os"
@@ -21,15 +21,6 @@ import (
 	"regexp"
 	"strings"
 )
-
-func ExplodeArg(args []string) []interface{} {
-	new := make([]interface{}, len(args))
-
-	for i, v := range args {
-		new[i] = v
-	}
-	return append(new)
-}
 
 func SanitzeAppName(input string) string {
 	r, _ := regexp.Compile("\\.ya?ml")
