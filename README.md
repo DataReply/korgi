@@ -10,7 +10,7 @@
 
 ### WARNING: Very early release, use at your own discretion.
 
-Tool to chain templating engine for k8s and execution engions for k8s. Depends on a very opinionated deployment structure:
+Tool to chain templating engines for k8s and execution engines for k8s. Depends on a very opinionated deployment structure:
 ```
 realm
    namespaces
