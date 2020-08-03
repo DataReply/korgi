@@ -36,7 +36,7 @@ func InitZapLog(debug bool) logr.Logger {
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	config.EncoderConfig.TimeKey = "timestamp"
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	//config.DisableCaller = true
+	config.DisableCaller = true
 
 	zapLog, _ := config.Build()
 	logger := zapr.NewLogger(zapLog)

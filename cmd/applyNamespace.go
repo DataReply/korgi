@@ -36,7 +36,9 @@ var namespaceCmd = &cobra.Command{
 
 		appFilter, _ := cmd.Flags().GetString("app")
 
-		workingDir, _ := cmd.Flags().GetString("working-dir")
+		outputDir, _ := cmd.Flags().GetString("output-dir")
+
+		isolated, _ := cmd.Flags().GetBool("isolated")
 
 		namespace := args[0]
 
@@ -49,7 +51,7 @@ var namespaceCmd = &cobra.Command{
 
 			if info.IsDir() && path != namespaceDir {
 				group := filepath.Base(path)
-				err := deployAppGroup(group, namespace, workingDir, appFilter, lint, dryRun)
+				err := applyAppGroup(group, namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
 				if err != nil {
 					return err
 				}

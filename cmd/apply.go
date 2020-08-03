@@ -46,9 +46,16 @@ func templateApp(app string, inputFilePath string, appGroupDir string, lint bool
 	return nil
 }
 
-func deployAppGroup(group string, namespace string, workingDir string, appFilter string, lint bool, dryRun bool) error {
+func getFinalOutputDir(outputDir string, isolated bool) string {
+	if isolated {
+		return utils.ConcatDirs(outputDir, execTime.Format("2006-01-02/15-04:05"))
+	}
+	return outputDir
+}
 
-	log.V(0).Info("deploying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun)
+func applyAppGroup(group string, namespace string, outputDir string, appFilter string, lint bool, dryRun bool) error {
+
+	log.V(0).Info("applying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun)
 	namespaceDir := utils.GetNamespaceDir(namespace)
 	if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
 		return fmt.Errorf("%s directory does not exist", namespaceDir)
@@ -56,7 +63,7 @@ func deployAppGroup(group string, namespace string, workingDir string, appFilter
 
 	appGroupDir := utils.ConcatDirs(namespaceDir, group)
 
-	targetAppGroupDir := utils.ConcatDirs(workingDir, execTime.Format("2006-01-02/15-04:05"), namespace, group)
+	targetAppGroupDir := utils.ConcatDirs(outputDir, namespace, group)
 
 	err := os.MkdirAll(targetAppGroupDir, os.ModePerm)
 	if err != nil {
@@ -120,9 +127,11 @@ var applyCmd = &cobra.Command{
 
 		appFilter, _ := cmd.Flags().GetString("app")
 
-		workingDir, _ := cmd.Flags().GetString("working-dir")
+		outputDir, _ := cmd.Flags().GetString("output-dir")
 
-		err := deployAppGroup(args[0], namespace, workingDir, appFilter, lint, dryRun)
+		isolated, _ := cmd.Flags().GetBool("isolated")
+
+		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
 		if err != nil {
 			return err
 		}
