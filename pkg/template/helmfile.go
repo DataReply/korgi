@@ -33,6 +33,7 @@ func NewHelmFileEngine(Opts Opts, log logr.Logger) *HelmFileEngine {
 }
 
 func (e *HelmFileEngine) Template(name string, inputFilePath string, outputFilePath string) error {
+
 	inputArgs := append([]string{"--environment", e.Opts.Environment,
 		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name),
 		"template", "--output-dir", outputFilePath}, e.Opts.ExtraArgs...)
@@ -67,5 +68,23 @@ func (e *HelmFileEngine) Lint(name string, inputFilePath string) error {
 		return err
 	}
 
+	return nil
+}
+
+func (e *HelmFileEngine) SyncRepos(file string) error {
+
+	inputArgs := append([]string{"-f", file, "repos"}, e.Opts.ExtraArgs...)
+
+	cmd := exec.Command("helmfile", inputArgs...)
+
+	print := func(in string) {
+		e.log.Info(in)
+	}
+
+	err := utils.ExecWithOutput(cmd, print, print)
+
+	if err != nil {
+		return err
+	}
 	return nil
 }

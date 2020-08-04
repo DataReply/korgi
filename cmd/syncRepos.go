@@ -13,34 +13,29 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package utils
+package cmd
 
 import (
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
+	"github.com/spf13/cobra"
 )
 
-func SanitzeAppName(input string) string {
-	r, _ := regexp.Compile("\\.ya?ml")
-	return r.ReplaceAllString(input, "")
+// syncReposCmd represents the delete command
+var syncReposCmd = &cobra.Command{
+	Use:   "sync-repos",
+	Short: "Sync repositories listed in a state file, primarily useful for Helmfile",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		err := templateEngine.SyncRepos(args[0])
+		if err != nil {
+			return err
+		}
+
+		return nil
+	},
 }
 
-func ConcatDirs(strs ...string) string {
-	var sb strings.Builder
-	for _, str := range strs {
-		sb.WriteString(str)
-		sb.WriteString("/")
-	}
-	return filepath.Clean(sb.String())
+func init() {
+	rootCmd.AddCommand(syncReposCmd)
 
-}
-
-func GetRealmeDir() string {
-	dir, _ := os.Getwd()
-	return ConcatDirs(dir, "realm")
-}
-func GetNamespaceDir(namespace string) string {
-	return ConcatDirs(GetRealmeDir(), "namespaces", namespace)
 }

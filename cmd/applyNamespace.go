@@ -28,7 +28,7 @@ import (
 var namespaceCmd = &cobra.Command{
 	Use:   "apply-namespace",
 	Short: "Namespace apply",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		lint, _ := cmd.Flags().GetBool("lint")
 

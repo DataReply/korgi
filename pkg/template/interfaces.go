@@ -22,6 +22,7 @@ const (
 type TemplateEngine interface {
 	Template(name string, inputFilePath string, outputFilePath string) error
 	Lint(name string, inputFilePath string) error
+	SyncRepos(file string) error
 }
 
 type Opts struct {

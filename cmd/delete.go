@@ -41,7 +41,7 @@ func deleteAppGroup(group string, namespace string, appFilter string) error {
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete app group or app",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		group := args[0]
 

@@ -51,3 +51,7 @@ func (e *KontemplateEngine) Lint(name string, inputFilePath string) error {
 
 	return nil
 }
+
+func (e *KontemplateEngine) SyncRepos(file string) error {
+	return nil
+}

@@ -116,7 +116,7 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 var applyCmd = &cobra.Command{
 	Use:   "apply",
 	Short: "Apply resources to k8s",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		namespace, _ := cmd.Flags().GetString("namespace")
