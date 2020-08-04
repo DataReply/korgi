@@ -73,7 +73,7 @@ func (e *HelmFileEngine) Lint(name string, inputFilePath string) error {
 
 func (e *HelmFileEngine) SyncRepos(file string) error {
 
-	inputArgs := append([]string{"-f", file, "repos"}, e.Opts.ExtraArgs...)
+	inputArgs := append([]string{"--allow-no-matching-release", "-f", file, "repos"}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("helmfile", inputArgs...)
 
