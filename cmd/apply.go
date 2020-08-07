@@ -19,10 +19,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/DataReply/korgi/pkg/utils"
 	"github.com/spf13/cobra"
 )
+
+const DefaultMatcher = "(.yaml|.yml)$"
 
 func templateApp(app string, inputFilePath string, appGroupDir string, lint bool) error {
 
@@ -53,7 +56,7 @@ func getFinalOutputDir(outputDir string, isolated bool) string {
 	return outputDir
 }
 
-func applyAppGroup(group string, namespace string, outputDir string, appFilter string, lint bool, dryRun bool) error {
+func applyAppGroup(group string, namespace string, outputDir string, appFilter string, lint bool, dryRun bool, match string) error {
 
 	log.V(0).Info("applying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun)
 	namespaceDir := utils.GetNamespaceDir(namespace)
@@ -75,6 +78,8 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 		return fmt.Errorf("listing group directory: %w", err)
 	}
 
+	matchers, _ := regexp.Compile(match)
+
 	for _, matchedAppFile := range matches {
 		appFile := filepath.Base(matchedAppFile)
 		if appFile != "_app_group.yaml" {
@@ -86,9 +91,11 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 				}
 			}
 
-			err = templateApp(app, matchedAppFile, targetAppGroupDir, lint)
-			if err != nil {
-				return fmt.Errorf("templating app: %w", err)
+			if matchers.MatchString(appFile) {
+				err = templateApp(app, matchedAppFile, targetAppGroupDir, lint)
+				if err != nil {
+					return fmt.Errorf("templating app: %w", err)
+				}
 			}
 
 		}
@@ -112,40 +119,49 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 	return nil
 }
 
+func runApplyWithMatch(cmd *cobra.Command, args []string, match string) error {
+
+	namespace, _ := cmd.Flags().GetString("namespace")
+
+	lint, _ := cmd.Flags().GetBool("lint")
+
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+	appFilter, _ := cmd.Flags().GetString("app")
+
+	outputDir, _ := cmd.Flags().GetString("output-dir")
+
+	isolated, _ := cmd.Flags().GetBool("isolate")
+
+	err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, match)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
-	Use:   "apply",
-	Short: "Apply resources to k8s",
-	Args:  cobra.ExactArgs(1),
+	Use:              "apply",
+	Short:            "Apply resources to k8s",
+	Args:             cobra.ExactArgs(1),
+	TraverseChildren: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		namespace, _ := cmd.Flags().GetString("namespace")
-
-		lint, _ := cmd.Flags().GetBool("lint")
-
-		dryRun, _ := cmd.Flags().GetBool("dry-run")
-
-		appFilter, _ := cmd.Flags().GetString("app")
-
-		outputDir, _ := cmd.Flags().GetString("output-dir")
-
-		isolated, _ := cmd.Flags().GetBool("isolated")
-
-		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
+		err := runApplyWithMatch(cmd, args, DefaultMatcher)
 		if err != nil {
 			return err
 		}
-
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(applyCmd)
 
-	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
-	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
+	rootCmd.AddCommand(applyCmd)
+	applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
+	applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
+	applyCmd.PersistentFlags().StringP("namespace", "n", "", "Target namespace")
 	applyCmd.MarkFlagRequired("namespace")
 
 }

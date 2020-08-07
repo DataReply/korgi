@@ -38,7 +38,7 @@ var namespaceCmd = &cobra.Command{
 
 		outputDir, _ := cmd.Flags().GetString("output-dir")
 
-		isolated, _ := cmd.Flags().GetBool("isolated")
+		isolated, _ := cmd.Flags().GetBool("isolate")
 
 		namespace := args[0]
 
@@ -51,7 +51,7 @@ var namespaceCmd = &cobra.Command{
 
 			if info.IsDir() && path != namespaceDir {
 				group := filepath.Base(path)
-				err := applyAppGroup(group, namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
+				err := applyAppGroup(group, namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, DefaultMatcher)
 				if err != nil {
 					return err
 				}

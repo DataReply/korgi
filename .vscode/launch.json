@@ -47,7 +47,21 @@
             "host": "127.0.0.1",
             "program": "${workspaceRoot}/main.go",
             //  "envFile": "${workspaceRoot}/.dev.env",
-             "args": ["apply", "-e","dev", "-n", "default","group","--app","dummy","monitoring"],
+             "args": ["apply", "-e","dev", "-n", "default","monitoring"],
+            "showLog": true
+        },
+        {
+            "name": "Launch Gitops",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "remotePath": "",
+            "cwd": "${workspaceRoot}",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "program": "${workspaceRoot}/main.go",
+            //  "envFile": "${workspaceRoot}/.dev.env",
+             "args": ["apply","-e","dev", "-n", "default","gitops-defs","--app","dummy","monitoring"],
             "showLog": true
         },
         {
