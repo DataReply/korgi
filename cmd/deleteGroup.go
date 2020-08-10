@@ -16,31 +16,48 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-// applyCmd represents the apply command
-var applyCmd = &cobra.Command{
-	Use:              "apply",
-	Short:            "Apply resources to k8s",
-	Args:             cobra.ExactArgs(1),
-	TraverseChildren: true,
-	RunE: func(cmd *cobra.Command, args []string) error {
+func deleteAppGroup(group string, namespace string, appFilter string) error {
+	if appFilter != "" {
+		err := execEngine.DeleteApp(group+"-"+appFilter, namespace)
+		if err != nil {
+			return fmt.Errorf("kapp app delete: %w", err)
+		}
+		return nil
+	}
 
-		err := runApplyWithMatch(cmd, args, defaultMatcher)
+	err := execEngine.DeleteGroup(group, namespace)
+	if err != nil {
+		return fmt.Errorf("kapp group delete: %w", err)
+	}
+	return nil
+}
+
+// deleteCmd represents the delete command
+var deleteGroupCmd = &cobra.Command{
+	Use:   "group",
+	Short: "Delete app group or app",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		group := args[0]
+
+		namespace, _ := cmd.Flags().GetString("namespace")
+
+		appFilter, _ := cmd.Flags().GetString("app")
+
+		err := deleteAppGroup(group, namespace, appFilter)
 		if err != nil {
 			return err
 		}
+
 		return nil
 	},
 }
 
 func init() {
-
-	rootCmd.AddCommand(applyCmd)
-	applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
-	applyCmd.PersistentFlags().StringP("namespace", "n", "", "Target namespace")
-	applyCmd.MarkFlagRequired("namespace")
-
+	deleteCmd.AddCommand(deleteGroupCmd)
 }

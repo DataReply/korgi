@@ -19,15 +19,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const GitOpsMatcher = "(.yaml.gitops|.yml.gitops)$"
-
 // applyAppDefs represents the apply command
 var applyAppDefs = &cobra.Command{
-	Use:   "gitops-defs",
+	Use:   "gitops-manifests",
 	Short: "Apply custom definition for generated app resources to k8s",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		err := runApplyWithMatch(cmd, args, GitOpsMatcher)
+		err := runApplyWithMatch(cmd, args, gitOpsMatcher)
 		if err != nil {
 			return err
 		}

@@ -24,11 +24,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// namespaceCmd represents the namespace command
-var namespaceCmd = &cobra.Command{
-	Use:   "apply-namespace",
-	Short: "Namespace apply",
-	Args:  cobra.ExactArgs(1),
+// applyNamespaceCmd represents the namespace command
+var applyNamespaceCmd = &cobra.Command{
+	Use:     "namespace",
+	Aliases: []string{"ns"},
+	Short:   "Namespace scoped apply",
+	Long:    "Iterates over the entire namespace directory, running the apply command on each app-group.",
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		lint, _ := cmd.Flags().GetBool("lint")
 
@@ -51,7 +53,7 @@ var namespaceCmd = &cobra.Command{
 
 			if info.IsDir() && path != namespaceDir {
 				group := filepath.Base(path)
-				err := applyAppGroup(group, namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, DefaultMatcher)
+				err := applyAppGroup(group, namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, defaultMatcher)
 				if err != nil {
 					return err
 				}
@@ -68,9 +70,5 @@ var namespaceCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(namespaceCmd)
-
-	namespaceCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-	namespaceCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
-
+	applyCmd.AddCommand(applyNamespaceCmd)
 }

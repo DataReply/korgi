@@ -22,7 +22,7 @@ import (
 	"strings"
 )
 
-func SanitzeAppName(input string) string {
+func SanitizeAppName(input string) string {
 	r, _ := regexp.Compile("\\.ya?ml")
 	return r.ReplaceAllString(input, "")
 }
