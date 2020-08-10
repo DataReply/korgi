@@ -1,22 +1,23 @@
-PROJECT_NAME :=korgi
+PROJECT_NAME:=korgi
 GOFILES:=$(shell find . -name '*.go' | grep -v -E '(./vendor)')
- 
+OS:="$(shell uname | tr '[:upper:]' '[:lower:]')"
+ARCH:=amd64
+
 run:
 	go run main.go
 
 all: clean check bin
 
-
 bin: $(GOFILES)
-	mkdir -p  bin/linux/
-	GOOS=linux GOARCH=amd64 go build -a -tags musl -ldflags "$(LDFLAGS)" -o bin/linux/korgi main.go
+	mkdir -p  bin/${OS}/
+	GOOS=${OS} GOARCH=${ARCH} go build -a -tags musl -ldflags "$(LDFLAGS)" -o bin/${OS}/korgi main.go
 
 gofmt:
 	gofmt -w -s pkg/
 	gofmt -w -s cmd/
 
 test:
-	 GOOS=linux GOARCH=amd64 go test ./...
+	 GOOS=${OS} GOARCH=${ARCH} go test ./...
 
 check:
 	@find . -name vendor -prune -o -name '*.go' -exec gofmt -s -d {} +
