@@ -19,28 +19,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// applyCmd represents the apply command
-var applyCmd = &cobra.Command{
-	Use:              "apply",
-	Short:            "Apply resources to k8s",
-	Args:             cobra.ExactArgs(1),
-	TraverseChildren: true,
+// applyAppDefs represents the apply command
+var applyAppDefs = &cobra.Command{
+	Use:   "gitops-manifests",
+	Short: "Apply custom definition for generated app resources to k8s",
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		err := runApplyWithMatch(cmd, args, defaultMatcher)
+		err := runApplyWithMatch(cmd, args, gitOpsMatcher)
 		if err != nil {
 			return err
 		}
 		return nil
+
 	},
 }
 
 func init() {
 
-	rootCmd.AddCommand(applyCmd)
-	applyCmd.PersistentFlags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.PersistentFlags().BoolP("dry-run", "d", false, "Dry Run")
-	applyCmd.PersistentFlags().StringP("namespace", "n", "", "Target namespace")
-	applyCmd.MarkFlagRequired("namespace")
+	applyCmd.AddCommand(applyAppDefs)
 
 }

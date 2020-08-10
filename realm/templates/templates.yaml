@@ -1,0 +1,55 @@
+  base: &base-local
+    missingFileHandler: Info
+    namespace: {{ .Values.namespace }}
+    hooks: []
+    secrets:
+    #  - ../../../values/defaults/secrets.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/secrets.yaml
+
+    #  - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/secrets.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/secrets.yaml
+
+    #  - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/secrets.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/secrets.yaml
+
+    #  - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/secrets.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/secrets.yaml
+
+    #  - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.secrets.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.secrets.yaml
+    valuesTemplate:
+      - namespace: {{ .Values.namespace }}
+
+      # top level generics
+    # - ../../../values/defaults/values.yaml
+    # - ../../../values/defaults/values.gotmpl
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/values.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/values.gotmpl
+
+      # defaults and overrides on a namespace level
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/values.yaml
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/values.gotmpl
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/values.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/values.gotmpl
+
+      # defaults and overrides on a namespace+app-group level
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/values.yaml
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/values.gotmpl
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/values.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/values.gotmpl
+
+      # defaults and overrides on a namespace+app-group+app level
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/values.yaml
+     # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/values.gotmpl
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/values.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/values.gotmpl
+
+      # defaults and overrides on a namespace+app-group+app+release level
+    # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.yaml
+    # - ../../../values/defaults/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.gotmpl
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.yaml
+      - ../../../values/env/{{`{{ .Environment.Name }}`}}/{{`{{ .Release.Namespace }}`}}/{{ .Values.appGroup }}/{{ .Values.app }}/{{`{{ .Release.Name }}`}}.gotmpl
+
+
+
+

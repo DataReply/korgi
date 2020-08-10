@@ -16,31 +16,13 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
-
-func deleteAppGroup(group string, namespace string, appFilter string) error {
-	if appFilter != "" {
-		err := execEngine.DeleteApp(group+"-"+appFilter, namespace)
-		if err != nil {
-			return fmt.Errorf("kapp app delete: %w", err)
-		}
-		return nil
-	}
-
-	err := execEngine.DeleteGroup(group, namespace)
-	if err != nil {
-		return fmt.Errorf("kapp group delete: %w", err)
-	}
-	return nil
-}
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Delete app group or app",
+	Short: "Delete k8s resources",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		group := args[0]
@@ -60,8 +42,4 @@ var deleteCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(deleteCmd)
-
-	deleteCmd.Flags().StringP("namespace", "n", "", "Target namespace")
-	deleteCmd.MarkFlagRequired("namespace")
-
 }

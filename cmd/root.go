@@ -96,7 +96,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringP("output-dir", "o", "/tmp/kapp", "Working directory")
 	rootCmd.PersistentFlags().BoolP("isolate", "i", true, "By default all output is isolated by appending the time in the following format 2006-01-02/15-04:05")
-	rootCmd.PersistentFlags().StringP("app", "a", "", "only include this app")
+	rootCmd.PersistentFlags().StringP("app", "a", "", "Deploy a single app which typically belongs to an app-group.")
 	rootCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
 
 	rootCmd.PersistentFlags().StringArray("exec-engine-args", []string{}, "Execution engine extra args(only kapp is supported)s")

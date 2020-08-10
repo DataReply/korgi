@@ -2,7 +2,22 @@ repositories:
 # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
 - name: stable
   url: https://kubernetes-charts.storage.googleapis.com
-  
+
+helmDefaults:
+  #tillerNamespace: tiller-namespace  #dedicated default key for tiller-namespace
+  tillerless: true                  #dedicated default key for tillerless
+  cleanupOnFail: false               #dedicated default key for helm flag --cleanup-on-fail
+  verify: true
+  wait: true
+  timeout: 600
+  recreatePods: true
+
+
+environments:
+  default:
+    values:
+      - test: test
+
 releases:
   - name: dummy
     chart: stable/raw
