@@ -38,7 +38,7 @@ var namespaceCmd = &cobra.Command{
 
 		outputDir, _ := cmd.Flags().GetString("output-dir")
 
-		isolated, _ := cmd.Flags().GetBool("isolated")
+		isolated, _ := cmd.Flags().GetBool("isolate")
 
 		namespace := args[0]
 

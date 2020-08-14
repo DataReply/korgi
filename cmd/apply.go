@@ -129,7 +129,7 @@ var applyCmd = &cobra.Command{
 
 		outputDir, _ := cmd.Flags().GetString("output-dir")
 
-		isolated, _ := cmd.Flags().GetBool("isolated")
+		isolated, _ := cmd.Flags().GetBool("isolate")
 
 		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
 		if err != nil {
