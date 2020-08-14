@@ -31,6 +31,9 @@ type ExecLine struct {
 func consume(wg *sync.WaitGroup, r io.Reader, logHook func(string)) {
 	defer wg.Done()
 	s := bufio.NewScanner(r)
+	buffer := make([]byte, 0, 1024*1024)
+	s.Buffer(buffer, 1024*1024)
+
 	for s.Scan() {
 		line := s.Text()
 		if line != "" {
