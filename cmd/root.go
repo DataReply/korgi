@@ -93,6 +93,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringP("environment", "e", "dev", "Target environment")
+	rootCmd.PersistentFlags().StringP("context", "c", "default", "Execution context")
 
 	rootCmd.PersistentFlags().StringP("output-dir", "o", "/tmp/kapp", "Working directory")
 	rootCmd.PersistentFlags().BoolP("isolate", "i", true, "By default all output is isolated by appending the time in the following format 2006-01-02/15-04:05")
