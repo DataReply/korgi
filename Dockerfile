@@ -8,7 +8,7 @@ RUN set -ex && apk --update --no-cache add \
     git \
     gcc \
     musl-dev
-    
+
 WORKDIR /app
 COPY .netrc /root/.netrc
 COPY . .
@@ -17,6 +17,7 @@ RUN make dep
 # RUN make test
 RUN make clean
 RUN make bin
+
 # final image
 FROM alpine:3.10.1
 
@@ -24,7 +25,7 @@ COPY --from=builder  /app/bin/linux/korgi /bin/korgi
 
 RUN set -ex && apk --update --no-cache add \
     curl \
-    openssl \ 
+    openssl \
     ca-certificates \
     && update-ca-certificates
 
