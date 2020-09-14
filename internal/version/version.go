@@ -41,7 +41,7 @@ func getVersion() string {
 	if metadata == "" {
 		return version
 	}
-	return version + "+" + metadata
+	return version + "-" + metadata
 }
 
 // Get returns build info

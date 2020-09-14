@@ -1,31 +1,38 @@
 PROJECT_NAME  := korgi
 SHELL         := /usr/bin/env bash
 
-OS            := "$(shell uname | tr '[:upper:]' '[:lower:]')"
+OS            := $(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH          := amd64
 LDFLAGS       := -w -s
 SRC           := $(shell find . -type f -name '*.go' -print)
 REPO          := github.com/DataReply/korgi
+RELEASE       := alpha
 
 GIT_COMMIT    := $(shell git rev-parse HEAD)
 GIT_SHA       := $(shell git rev-parse --short HEAD)
-GIT_TAG       := $(shell git describe --tags --abbrev=0 --exact-match 2>/dev/null)
+# Last git tag that is reachable from this commit in the tree.
+# See here: https://git-scm.com/docs/git-describe
+GIT_TAG       := $(shell git describe --tags --abbrev=0 2>/dev/null)
+# Are we building from a tagged commit?
+GIT_EXACT_TAG       := $(shell git describe --tags --abbrev=0  --exact-match 2>/dev/null)
 GIT_DIRTY     := $(shell test -n "`git status --porcelain`" && echo "dirty" || echo "clean")
+# Requires git 2.22+
+GIT_BRANCH    := $(shell git branch --show-current)
 
+# Might wanna set VERSION explicitly
 ifdef VERSION
-	BINARY_VERSION = $(VERSION)
+	BINARY_VERSION = ${VERSION}
 endif
 BINARY_VERSION ?= ${GIT_TAG}
 
-# Only set Version if building a tag or VERSION is set
-ifneq ($(BINARY_VERSION),)
+ifneq (${BINARY_VERSION},)
 	LDFLAGS += -X ${REPO}/internal/version.version=${BINARY_VERSION}
 endif
 
-VERSION_METADATA = unreleased
-# Clear the "unreleased" string in BuildMetadata if there's a tag
-ifneq ($(GIT_TAG),)
-	VERSION_METADATA =
+VERSION_METADATA := pre-release
+# Set metadata to release if we're releasing from a git tag.
+ifneq ($(GIT_EXACT_TAG),)
+	VERSION_METADATA = ${RELEASE}
 endif
 
 LDFLAGS += -X ${REPO}/internal/version.metadata=${VERSION_METADATA}
@@ -34,7 +41,7 @@ LDFLAGS += -X ${REPO}/internal/version.gitTreeState=${GIT_DIRTY}
 
 bin: $(SRC)
 	mkdir -p  bin/${OS}/
-	GOOS=${OS} GOARCH=${ARCH} go build -ldflags "$(LDFLAGS)" -o bin/${OS}/korgi main.go
+	GOOS=${OS} GOARCH=${ARCH} go build -ldflags "${LDFLAGS}" -o bin/${OS}/korgi main.go
 
 gofmt:
 	gofmt -w -s pkg/

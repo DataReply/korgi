@@ -16,7 +16,7 @@ Show the version for Korgi.
 This will print a representation the version of Korgi.
 The output will look something like this:
 
-version.BuildInfo{Version:"v2.0.0", GitCommit:"ff52399e51bb880526e9cd0ed8386f6433b74da1", GitTreeState:"clean"}
+version.BuildInfo{Version:"v1.0.0", GitCommit:"1234567", GitTreeState:"clean"}
 
 - Version is the semantic version of the release.
 - GitCommit is the SHA for the commit that this version was built from.
