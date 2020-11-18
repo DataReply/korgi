@@ -13,6 +13,8 @@ builds:
     - linux
     - windows
     - darwin
+  ldflags:
+   - -X "github.com/DataReply/korgi/internal/version.version={{.Env.SOURCE_TAG}}" -X "github.com/DataReply/korgi/internal/version.metadata={{.Env.VERSION_METADATA}}" -X "github.com/DataReply/korgi/internal/version.gitCommit={{.Env.GITHUB_SHA}}"
 archives:
   - 
     format: binary
@@ -32,3 +34,5 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
+ 

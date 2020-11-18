@@ -54,7 +54,7 @@ var rootCmd = &cobra.Command{
 			ExtraArgs: execExtraArgs,
 		}, log)
 
-		log.V(0).Info("using engines", "template", templateEngineName, "exec", "kapp")
+		//log.V(0).Info("using engines", "template", templateEngineName, "exec", "kapp")
 
 		switch e := templateEngineName; e {
 		case "helmfile":
