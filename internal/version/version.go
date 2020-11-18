@@ -20,8 +20,6 @@ var (
 	metadata = ""
 	// gitCommit is the git sha1
 	gitCommit = ""
-	// gitTreeState is the state of the git tree
-	gitTreeState = ""
 )
 
 // BuildInfo describes the compile time information.
@@ -30,8 +28,6 @@ type BuildInfo struct {
 	Version string `json:"version,omitempty"`
 	// GitCommit is the git sha1.
 	GitCommit string `json:"git_commit,omitempty"`
-	// GitTreeState is the state of the git tree.
-	GitTreeState string `json:"git_tree_state,omitempty"`
 	// GoVersion is the version of the Go compiler used.
 	GoVersion string `json:"go_version,omitempty"`
 }
@@ -47,9 +43,8 @@ func getVersion() string {
 // Get returns build info
 func Get() BuildInfo {
 	return BuildInfo{
-		Version:      getVersion(),
-		GitCommit:    gitCommit,
-		GitTreeState: gitTreeState,
-		GoVersion:    runtime.Version(),
+		Version:   getVersion(),
+		GitCommit: gitCommit,
+		GoVersion: runtime.Version(),
 	}
 }
