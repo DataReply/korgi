@@ -18,7 +18,7 @@
             "program": "${workspaceRoot}/main.go",
             
             //  "envFile": "${workspaceRoot}/.dev.env",
-             "args": ["apply-namespace","--dry-run", "-e","dev","--lint","dap-base"],
+             "args": ["apply-namespace","--skip-deps","--diff-run","--dry-run", "-e","dev","--lint","dap-base"],
             "showLog": true
         },
         {
@@ -47,7 +47,7 @@
             "host": "127.0.0.1",
             "program": "${workspaceRoot}/main.go",
             //  "envFile": "${workspaceRoot}/.dev.env",
-             "args": ["apply", "-e","dev", "-n", "default","group","--app","dummy","monitoring"],
+             "args": ["apply","--skip-deps","--diff-run", "-e","dev", "-n", "default","--app","dummy","monitoring"],
             "showLog": true
         },
         {

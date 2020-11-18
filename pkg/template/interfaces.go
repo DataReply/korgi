@@ -27,5 +27,6 @@ type TemplateEngine interface {
 
 type Opts struct {
 	Environment string
+	SkipDeps    bool
 	ExtraArgs   []string
 }

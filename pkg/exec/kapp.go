@@ -16,6 +16,7 @@ limitations under the License.
 package exec
 
 import (
+	"fmt"
 	"os/exec"
 
 	"github.com/DataReply/korgi/pkg/utils"
@@ -33,7 +34,7 @@ func NewKappEngine(opts Opts, log logr.Logger) *KappEngine {
 
 func (e *KappEngine) DeleteApp(app string, namespace string) error {
 
-	inputArgs := append([]string{"-y", "delete", "-a", app, "-n", namespace}, e.Opts.ExtraArgs...)
+	inputArgs := append([]string{"-y", "delete", "-a", app, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("kapp", inputArgs...)
 	print := func(in string) {
@@ -52,7 +53,7 @@ func (e *KappEngine) DeleteApp(app string, namespace string) error {
 
 func (e *KappEngine) DeleteGroup(group string, namespace string) error {
 
-	inputArgs := append([]string{"-y", "app-group", "delete", "-n", namespace, "-g", group}, e.Opts.ExtraArgs...)
+	inputArgs := append([]string{"-y", "app-group", "delete", "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("kapp", inputArgs...)
 	print := func(in string) {
@@ -70,7 +71,7 @@ func (e *KappEngine) DeleteGroup(group string, namespace string) error {
 
 func (e *KappEngine) DeployApp(app string, appDir string, namespace string) error {
 
-	inputArgs := append([]string{"-y", "deploy", "-a", app, "-f", appDir, "-n", namespace}, e.Opts.ExtraArgs...)
+	inputArgs := append([]string{"-y", "deploy", "-a", app, "-f", appDir, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("kapp", inputArgs...)
 	print := func(in string) {
@@ -89,7 +90,7 @@ func (e *KappEngine) DeployApp(app string, appDir string, namespace string) erro
 
 func (e *KappEngine) DeployGroup(group string, appGroupDir string, namespace string) error {
 
-	inputArgs := append([]string{"-y", "app-group", "deploy", "-d", appGroupDir, "-n", namespace, "-g", group}, e.Opts.ExtraArgs...)
+	inputArgs := append([]string{"-y", "app-group", "deploy", "-d", appGroupDir, "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("kapp", inputArgs...)
 	print := func(in string) {

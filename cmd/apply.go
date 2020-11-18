@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/DataReply/korgi/pkg/utils"
 	"github.com/spf13/cobra"
@@ -33,12 +34,12 @@ func templateApp(app string, inputFilePath string, appGroupDir string, lint bool
 		return fmt.Errorf("creating app dir: %w", err)
 	}
 	if lint {
-		err = templateEngine.Lint(app, inputFilePath)
+		err = helmfileEngine.Lint(app, inputFilePath)
 		if err != nil {
 			return err
 		}
 	}
-	err = templateEngine.Template(app, inputFilePath, targeAppDir)
+	err = helmfileEngine.Template(app, inputFilePath, targeAppDir)
 	if err != nil {
 		return err
 	}
@@ -48,7 +49,7 @@ func templateApp(app string, inputFilePath string, appGroupDir string, lint bool
 
 func getFinalOutputDir(outputDir string, isolated bool) string {
 	if isolated {
-		return utils.ConcatDirs(outputDir, execTime.Format("2006-01-02/15-04:05"))
+		return utils.ConcatDirs(outputDir, strconv.FormatInt(execTime.UTC().Unix(), 10))
 	}
 	return outputDir
 }
@@ -96,14 +97,14 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 	}
 	if !dryRun {
 		if appFilter != "" {
-			err = execEngine.DeployApp(group+"-"+appFilter, utils.ConcatDirs(targetAppGroupDir, appFilter), namespace)
+			err = kappEngine.DeployApp(group+"-"+appFilter, utils.ConcatDirs(targetAppGroupDir, appFilter), namespace)
 			if err != nil {
 				return fmt.Errorf("running kapp deploy with appFilter: %w", err)
 			}
 			return nil
 		}
 
-		err = execEngine.DeployGroup(group, targetAppGroupDir, namespace)
+		err = kappEngine.DeployGroup(group, targetAppGroupDir, namespace)
 		if err != nil {
 			return fmt.Errorf("running kapp deploy: %w", err)
 		}
@@ -144,7 +145,7 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 
 	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
+
 	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
 	applyCmd.MarkFlagRequired("namespace")
 

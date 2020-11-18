@@ -23,14 +23,14 @@ import (
 
 func deleteAppGroup(group string, namespace string, appFilter string) error {
 	if appFilter != "" {
-		err := execEngine.DeleteApp(group+"-"+appFilter, namespace)
+		err := kappEngine.DeleteApp(group+"-"+appFilter, namespace)
 		if err != nil {
 			return fmt.Errorf("kapp app delete: %w", err)
 		}
 		return nil
 	}
 
-	err := execEngine.DeleteGroup(group, namespace)
+	err := kappEngine.DeleteGroup(group, namespace)
 	if err != nil {
 		return fmt.Errorf("kapp group delete: %w", err)
 	}
