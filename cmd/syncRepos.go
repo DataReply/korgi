@@ -26,7 +26,7 @@ var syncReposCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		err := templateEngine.SyncRepos(args[0])
+		err := helmfileEngine.SyncRepos(args[0])
 		if err != nil {
 			return err
 		}

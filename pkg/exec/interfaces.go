@@ -23,5 +23,6 @@ type ExecEngine interface {
 }
 
 type Opts struct {
+	DiffRun   bool
 	ExtraArgs []string
 }

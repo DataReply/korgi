@@ -36,7 +36,7 @@ func (e *HelmFileEngine) Template(name string, inputFilePath string, outputFileP
 
 	inputArgs := append([]string{"--environment", e.Opts.Environment,
 		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name),
-		"template", "--output-dir", outputFilePath}, e.Opts.ExtraArgs...)
+		"template", "--output-dir", outputFilePath, fmt.Sprintf("--skip-deps=%t", e.Opts.SkipDeps)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("helmfile", inputArgs...)
 	print := func(in string) {
@@ -54,7 +54,7 @@ func (e *HelmFileEngine) Template(name string, inputFilePath string, outputFileP
 func (e *HelmFileEngine) Lint(name string, inputFilePath string) error {
 
 	inputArgs := append([]string{"--environment", e.Opts.Environment,
-		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name), "lint"}, e.Opts.ExtraArgs...)
+		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name), "lint", fmt.Sprintf("--skip-deps=%t", e.Opts.SkipDeps)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("helmfile", inputArgs...)
 

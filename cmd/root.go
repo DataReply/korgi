@@ -34,8 +34,8 @@ var log logr.Logger
 var cfgFile string
 
 var execTime time.Time
-var templateEngine template.TemplateEngine
-var execEngine exec.ExecEngine
+var helmfileEngine *template.HelmFileEngine
+var kappEngine *exec.KappEngine
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -44,33 +44,24 @@ var rootCmd = &cobra.Command{
 	Short:        "DRY Kubernetes Deployments with kapp, helmfile and kontemplate",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 
-		templateEngineName, _ := cmd.Flags().GetString("template-engine")
-		templateExtraArgs, _ := cmd.Flags().GetStringArray("template-engine-args")
-		execExtraArgs, _ := cmd.Flags().GetStringArray("exec-engine-args")
+		templateExtraArgs, _ := cmd.Flags().GetStringArray("helmfile-args")
+		execExtraArgs, _ := cmd.Flags().GetStringArray("kapp-args")
 
 		environment, _ := cmd.Flags().GetString("environment")
 
-		execEngine = exec.NewKappEngine(exec.Opts{
+		skipDeps, _ := cmd.Flags().GetBool("skip-deps")
+		diffRun, _ := cmd.Flags().GetBool("diff-run")
+
+		kappEngine = exec.NewKappEngine(exec.Opts{
+			DiffRun:   diffRun,
 			ExtraArgs: execExtraArgs,
 		}, log)
 
-		//log.V(0).Info("using engines", "template", templateEngineName, "exec", "kapp")
-
-		switch e := templateEngineName; e {
-		case "helmfile":
-			templateEngine = template.NewHelmFileEngine(template.Opts{
-				Environment: environment,
-				ExtraArgs:   templateExtraArgs,
-			}, log)
-		case "kontemplate":
-			templateEngine = template.NewKontemplateEngine(template.Opts{
-				Environment: environment,
-				ExtraArgs:   templateExtraArgs,
-			}, log)
-		default:
-			return fmt.Errorf("%s template engine is not supported", templateEngineName)
-		}
-
+		helmfileEngine = template.NewHelmFileEngine(template.Opts{
+			Environment: environment,
+			SkipDeps:    skipDeps,
+			ExtraArgs:   templateExtraArgs,
+		}, log)
 		return nil
 	},
 }
@@ -97,10 +88,13 @@ func init() {
 	rootCmd.PersistentFlags().StringP("output-dir", "o", "/tmp/kapp", "Working directory")
 	rootCmd.PersistentFlags().BoolP("isolate", "i", true, "By default all output is isolated by appending the time in the following format 2006-01-02/15-04:05")
 	rootCmd.PersistentFlags().StringP("app", "a", "", "only include this app")
-	rootCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "Template engine")
+	rootCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "[Depreceated] can only be filefile")
 
-	rootCmd.PersistentFlags().StringArray("exec-engine-args", []string{}, "Execution engine extra args(only kapp is supported)s")
-	rootCmd.PersistentFlags().StringArray("template-engine-args", []string{}, "Template engine extra args")
+	rootCmd.PersistentFlags().Bool("skip-deps", false, "Skip pulling helm dependencies")
+	rootCmd.PersistentFlags().Bool("diff-run", false, "Only show kapp diffs")
+
+	rootCmd.PersistentFlags().StringArray("kapp-args", []string{}, "Execution engine extra args")
+	rootCmd.PersistentFlags().StringArray("helmfile-args", []string{}, "Template engine extra args")
 
 	rootCmd.MarkFlagRequired("environment")
 

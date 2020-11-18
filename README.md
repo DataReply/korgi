@@ -51,7 +51,7 @@ korgi apply -e dev -n default -a dummy monitoring
 Passing extra args to the engines:
 
 ```
-korgi --template-engine-args "--skip-deps" --exec-engine-args "--color=false" apply-namespace default
+korgi --helmfile-args "--skip-deps" --kapp-args "--color=false" apply-namespace default
 ```
 
 Delete a single group:
