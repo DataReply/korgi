@@ -7,14 +7,14 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-- ldflags:
-   - -X github.com/DataReply/korgi/internal/version.version={{.Env.SOURCE_TAG}}"-X "github.com/DataReply/korgi/internal/version.metadata={{.Env.VERSION_METADATA}}" -X "github.com/DataReply/korgi/internal/version.gitCommit={{.Env.GITHUB_SHA}}"
 - env:
   - CGO_ENABLED=0
   goos:
     - linux
     - windows
     - darwin
+  ldflags:
+   - -X github.com/DataReply/korgi/internal/version.version={{.Env.SOURCE_TAG}}"-X "github.com/DataReply/korgi/internal/version.metadata={{.Env.VERSION_METADATA}}" -X "github.com/DataReply/korgi/internal/version.gitCommit={{.Env.GITHUB_SHA}}"
 archives:
   - 
     format: binary
