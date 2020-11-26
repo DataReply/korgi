@@ -145,7 +145,7 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 
 	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-
+	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
 	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
 	applyCmd.MarkFlagRequired("namespace")
 
