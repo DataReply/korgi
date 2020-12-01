@@ -30,6 +30,15 @@ var deleteNamespaceCmd = &cobra.Command{
 	Short: "Namespace apply",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		toContinue, errAsking := delYN(os.Stdin)
+		switch {
+		case errAsking != nil:
+			return errAsking
+		case !toContinue:
+			os.Exit(0)
+		}
+
 		appFilter, _ := cmd.Flags().GetString("app")
 
 		namespace := args[0]

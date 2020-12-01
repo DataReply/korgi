@@ -16,7 +16,11 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"os"
+	"unicode"
 
 	"github.com/spf13/cobra"
 )
@@ -37,12 +41,44 @@ func deleteAppGroup(group string, namespace string, appFilter string) error {
 	return nil
 }
 
+const q = `Warning!
+This action could delete some resources like PVs, which can be in use from another party`
+
+func delYN(in io.Reader) (bool, error) {
+	r := bufio.NewReader(in)
+	fmt.Println(q)
+	for {
+		fmt.Print("Do you want to continue [y/n]")
+		response, err := r.ReadString('\n')
+		if err != nil {
+			return false, err
+		}
+		switch {
+		case len(response) == 2 && byte(unicode.ToLower(rune(response[0]))) == 'y':
+			return true, nil
+
+		case len(response) == 2 && byte(unicode.ToLower(rune(response[0]))) == 'n':
+			return false, nil
+		}
+	}
+
+}
+
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete app group or app",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+
+		toContinue, errAsking := delYN(os.Stdin)
+		switch {
+		case errAsking != nil:
+			return errAsking
+		case !toContinue:
+			os.Exit(0)
+		}
+
 		group := args[0]
 
 		namespace, _ := cmd.Flags().GetString("namespace")
