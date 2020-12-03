@@ -54,9 +54,9 @@ func getFinalOutputDir(outputDir string, isolated bool) string {
 	return outputDir
 }
 
-func applyAppGroup(group string, namespace string, outputDir string, appFilter string, lint bool, dryRun bool) error {
+func applyAppGroup(group string, namespace string, outputDir string, appFilter string, lint bool, dryRun bool, askUser bool) error {
 
-	log.V(0).Info("applying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun)
+	log.V(0).Info("applying", "group", group, "namespace", namespace, "app", appFilter, "lint", lint, "dry", dryRun, "ask", askUser)
 	namespaceDir := utils.GetNamespaceDir(namespace)
 	if _, err := os.Stat(namespaceDir); os.IsNotExist(err) {
 		return fmt.Errorf("%s directory does not exist", namespaceDir)
@@ -132,7 +132,19 @@ var applyCmd = &cobra.Command{
 
 		isolated, _ := cmd.Flags().GetBool("isolate")
 
-		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun)
+		askForConfirmation, _ := cmd.Flags().GetBool("ask-for-confirmation")
+
+		if !askForConfirmation {
+			toContinue, errAsking := delYN(os.Stdin)
+			switch {
+			case errAsking != nil:
+				return errAsking
+			case !toContinue:
+				os.Exit(0)
+			}
+		}
+
+		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, askForConfirmation)
 		if err != nil {
 			return err
 		}
@@ -145,7 +157,7 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 
 	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
+
 	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
 	applyCmd.MarkFlagRequired("namespace")
 
