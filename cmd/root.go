@@ -52,9 +52,12 @@ var rootCmd = &cobra.Command{
 		skipDeps, _ := cmd.Flags().GetBool("skip-deps")
 		diffRun, _ := cmd.Flags().GetBool("diff-run")
 
+		askForConfirmation, _ := cmd.Flags().GetBool("ask-for-confirmation")
+
 		kappEngine = exec.NewKappEngine(exec.Opts{
-			DiffRun:   diffRun,
-			ExtraArgs: execExtraArgs,
+			DiffRun:            diffRun,
+			ExtraArgs:          execExtraArgs,
+			AskForConfirmation: askForConfirmation,
 		}, log)
 
 		helmfileEngine = template.NewHelmFileEngine(template.Opts{
@@ -95,6 +98,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringArray("kapp-args", []string{}, "Execution engine extra args")
 	rootCmd.PersistentFlags().StringArray("helmfile-args", []string{}, "Template engine extra args")
+
+	rootCmd.PersistentFlags().BoolP("ask-for-confirmation", "c", true, "Ask the user to confirm the operation before kapp execution")
 
 	rootCmd.MarkFlagRequired("environment")
 

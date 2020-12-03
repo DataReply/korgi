@@ -28,76 +28,44 @@ type KappEngine struct {
 	log  logr.Logger
 }
 
+var inputArgs []string
+
 func NewKappEngine(opts Opts, log logr.Logger) *KappEngine {
+	if !opts.AskForConfirmation {
+		inputArgs = append(inputArgs, "-y")
+	}
 	return &KappEngine{opts, log}
 }
 
 func (e *KappEngine) DeleteApp(app string, namespace string) error {
-
-	inputArgs := append([]string{"-y", "delete", "-a", app, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
-
-	cmd := exec.Command("kapp", inputArgs...)
-	print := func(in string) {
-		e.log.Info(in)
-	}
-
-	err := utils.ExecWithOutput(cmd, print, print)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-
+	return e.exec(append(inputArgs, []string{"delete", "-a", app, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}...))
 }
 
 func (e *KappEngine) DeleteGroup(group string, namespace string) error {
-
-	inputArgs := append([]string{"-y", "app-group", "delete", "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
-
-	cmd := exec.Command("kapp", inputArgs...)
-	print := func(in string) {
-		e.log.Info(in)
-	}
-
-	err := utils.ExecWithOutput(cmd, print, print)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return e.exec(append(inputArgs, []string{"app-group", "delete", "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}...))
 }
 
 func (e *KappEngine) DeployApp(app string, appDir string, namespace string) error {
-
-	inputArgs := append([]string{"-y", "deploy", "-a", app, "-f", appDir, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
-
-	cmd := exec.Command("kapp", inputArgs...)
-	print := func(in string) {
-		e.log.Info(in)
-	}
-
-	err := utils.ExecWithOutput(cmd, print, print)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-
+	return e.exec(append(inputArgs, []string{"deploy", "-a", app, "-f", appDir, "-n", namespace, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}...))
 }
 
 func (e *KappEngine) DeployGroup(group string, appGroupDir string, namespace string) error {
+	return e.exec(append(inputArgs, []string{"app-group", "deploy", "-d", appGroupDir, "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}...))
+}
 
-	inputArgs := append([]string{"-y", "app-group", "deploy", "-d", appGroupDir, "-n", namespace, "-g", group, fmt.Sprintf("--diff-run=%t", e.Opts.DiffRun)}, e.Opts.ExtraArgs...)
+func (e *KappEngine) exec(inputArgs []string) error {
 
-	cmd := exec.Command("kapp", inputArgs...)
+	cmd := exec.Command("kapp", append(inputArgs, e.Opts.ExtraArgs...)...)
 	print := func(in string) {
 		e.log.Info(in)
 	}
 
-	err := utils.ExecWithOutput(cmd, print, print)
+	var err error
+	if e.Opts.AskForConfirmation {
+		err = utils.ExecWithStdInOut(cmd)
+	} else {
+		err = utils.ExecWithOutput(cmd, print, print)
+	}
 
 	if err != nil {
 		return err

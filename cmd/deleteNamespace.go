@@ -31,12 +31,16 @@ var deleteNamespaceCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		toContinue, errAsking := delYN(os.Stdin)
-		switch {
-		case errAsking != nil:
-			return errAsking
-		case !toContinue:
-			os.Exit(0)
+		askForConfirmation, _ := cmd.Flags().GetBool("ask-for-confirmation")
+
+		if !askForConfirmation {
+			toContinue, errAsking := delYN(os.Stdin)
+			switch {
+			case errAsking != nil:
+				return errAsking
+			case !toContinue:
+				os.Exit(0)
+			}
 		}
 
 		appFilter, _ := cmd.Flags().GetString("app")

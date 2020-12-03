@@ -80,3 +80,10 @@ func ExecWithOutput(cmd *exec.Cmd, outHook func(string), errorHook func(string))
 	return nil
 
 }
+
+func ExecWithStdInOut(cmd *exec.Cmd) error {
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
+}
