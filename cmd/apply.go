@@ -134,6 +134,16 @@ var applyCmd = &cobra.Command{
 
 		askForConfirmation, _ := cmd.Flags().GetBool("ask-for-confirmation")
 
+		if !askForConfirmation {
+			toContinue, errAsking := delYN(os.Stdin)
+			switch {
+			case errAsking != nil:
+				return errAsking
+			case !toContinue:
+				os.Exit(0)
+			}
+		}
+
 		err := applyAppGroup(args[0], namespace, getFinalOutputDir(outputDir, isolated), appFilter, lint, dryRun, askForConfirmation)
 		if err != nil {
 			return err
