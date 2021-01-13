@@ -32,10 +32,10 @@ func NewHelmFileEngine(Opts Opts, log logr.Logger) *HelmFileEngine {
 	return &HelmFileEngine{Opts, log}
 }
 
-func (e *HelmFileEngine) Template(name string, inputFilePath string, outputFilePath string) error {
+func (e *HelmFileEngine) Template(name string,namespace string, inputFilePath string, outputFilePath string) error {
 
 	inputArgs := append([]string{"--environment", e.Opts.Environment,
-		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s", name),
+		"--file", inputFilePath, "--state-values-set", fmt.Sprintf("app=%s,namespace=%s", name,namespace),
 		"template", "--output-dir", outputFilePath, fmt.Sprintf("--skip-deps=%t", e.Opts.SkipDeps)}, e.Opts.ExtraArgs...)
 
 	cmd := exec.Command("helmfile", inputArgs...)

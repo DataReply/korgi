@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func templateApp(app string, inputFilePath string, appGroupDir string, lint bool) error {
+func templateApp(app string, namespace string, inputFilePath string, appGroupDir string, lint bool) error {
 
 	targeAppDir := utils.ConcatDirs(appGroupDir, app)
 
@@ -39,7 +39,7 @@ func templateApp(app string, inputFilePath string, appGroupDir string, lint bool
 			return err
 		}
 	}
-	err = helmfileEngine.Template(app, inputFilePath, targeAppDir)
+	err = helmfileEngine.Template(app, namespace, inputFilePath, targeAppDir)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 				}
 			}
 
-			err = templateApp(app, matchedAppFile, targetAppGroupDir, lint)
+			err = templateApp(app, namespace, matchedAppFile, targetAppGroupDir, lint)
 			if err != nil {
 				return fmt.Errorf("templating app: %w", err)
 			}
@@ -157,7 +157,7 @@ func init() {
 	rootCmd.AddCommand(applyCmd)
 
 	applyCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-
+	applyCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
 	applyCmd.Flags().StringP("namespace", "n", "", "Target namespace")
 	applyCmd.MarkFlagRequired("namespace")
 

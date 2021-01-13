@@ -1,5 +1,7 @@
 
-
+bases:
+- ../../_defaults.yaml
+- ../../../values/env/dev/{{.Environment.values.namespace}}/values.yaml
 releases:
   - name: test1
     chart: incubator/raw  

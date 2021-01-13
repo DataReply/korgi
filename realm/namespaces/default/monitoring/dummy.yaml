@@ -1,4 +1,6 @@
-
+bases:
+- ../../_defaults.yaml
+- ../../../values/env/dev/{{.Environment.Values.namespace}}/values.yaml
 
 releases:
   - name: dummy

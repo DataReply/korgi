@@ -1,8 +1,8 @@
 repositories:
 # To use official "stable" charts a.k.a https://github.com/helm/charts/tree/master/stable
 - name: stable
-  url: https://kubernetes-charts.storage.googleapis.com
+  url: https://kubernetes-charts-incubator.storage.googleapis.com
   
 releases:
-  - name: dummy
+  - name: dummydummy
     chart: stable/raw
