@@ -27,6 +27,8 @@ Supported templating engines:
 Supported execution engines:
 - kapp
 
+A reference implementation of the assumed deployment structure can be found [here](https://github.com/DataReply/korganizor-reference).
+
 # Examples
 
 Apply all groups in namespace `default` and env `dev`:
