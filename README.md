@@ -21,14 +21,16 @@ realm
                 app2.yaml
 ```
 
+
+Korgi acts as glue between kubernetes templating and state management engines.
+In its current version, Korgi integrates [Helmfile](https://github.com/roboll/helmfile) and [kapp](https://github.com/vmware-tanzu/carvel-kapp) while imposing a specific deployment structure.
+
+<p align="center">
+  <img src="doc/img/korgi-component-view.png">
+</p>
+
 A reference implementation of the assumed deployment structure can be found [here](https://github.com/DataReply/korganizer-reference).
 
-Supported templating engines:
-- helmfile
-- kontemplate
-
-Supported execution engines:
-- kapp
 
 
 # Examples
