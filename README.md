@@ -20,12 +20,16 @@ realm
                 app1.yaml
                 app2.yaml
 ```
+
+A reference implementation of the assumed deployment structure can be found [here](https://github.com/DataReply/korganizer-reference).
+
 Supported templating engines:
 - helmfile
 - kontemplate
 
 Supported execution engines:
 - kapp
+
 
 # Examples
 
