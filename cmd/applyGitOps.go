@@ -19,22 +19,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// syncReposCmd represents the delete command
-var syncReposCmd = &cobra.Command{
-	Use:   "sync-repos",
-	Short: "Sync repositories listed in a state file, primarily useful for Helmfile",
+// applyAppDefs represents the apply command
+var applyAppDefs = &cobra.Command{
+	Use:   "gitops-manifests",
+	Short: "Apply custom definition for generated app resources to k8s",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		err := helmfileEngine.SyncRepos(args[0])
+		err := runApplyWithMatch(cmd, args, gitOpsMatcher)
 		if err != nil {
 			return err
 		}
-
 		return nil
+
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(syncReposCmd)
+	applyCmd.AddCommand(applyAppDefs)
 }

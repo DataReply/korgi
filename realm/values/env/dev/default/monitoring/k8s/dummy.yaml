@@ -1,0 +1,80 @@
+appLabel: "k8s-tests"
+
+serviceAccountName: k8s-tests
+
+secretPostgres: testuser.usecase-postgres-db.credentials.postgresql.acid.zalan.do
+
+configMap:
+  name: k8s-tests-validation-configs
+  data:
+    - name: NODES_COUNT
+      value: 6
+    - name: MASTERS_COUNT
+      value: 3
+    - name: DBHOST
+      value: usecase-postgres-db.usecase
+    - name: DBNAME
+      value: postgres
+    - name: DBPORT
+      value: 5432
+    - name: DBSECRET
+      value: testuser.usecase-postgres-db.credentials.postgresql.acid.zalan.do
+    - name: LOKI_URL
+      value: http://loki.dap-base:3100
+    - name: PROMETHEUS_URL
+      value: http://prometheus-operated.dap-base:9090
+    - name: GRAFANA_URL
+      value: http://grafana.dap-base:3000
+    - name: REGISTRY_URL
+      value: docker-registry.dap-base:5000
+#    - name: REGISTRY_IMAGE
+#      value: busybox:local
+#    - name: REGISTRY_USER
+#      value: ...
+#    - name: REGISTRY_PASS
+#      value: ...
+    {{ if eq (.Values.auth|default false) true }}
+    - name: AUTH
+      value: true
+    {{ end }}
+    {{ if eq (.Values.blockStorageClass | default "isilon") "isilon" }}
+    - name: STORAGE_CLASS
+      value: isilon
+    {{ end }}
+
+validation:
+  name: k8s-tests-validation
+  schedule: "0 2 * * *"
+  container:
+    name: validation
+    image: datareply/k8s-tests:0.2
+    imagePullPolicy: "IfNotPresent"
+    command: "python3"
+    args: "validation.py"
+  restartPolicy: OnFailure
+  backoffLimit: 4
+
+checks:
+  name: k8s-tests-checks
+  schedule: "0 2 * * *"
+  volumes:
+    - name: docker-socket-volume
+      hostPath:
+        path: /var/run/docker.sock
+        type: File
+    - name: docker-bin-volume
+      hostPath:
+        path: /usr/bin/docker
+  container:
+    name: checks
+    image: datareply/k8s-tests:0.2
+    imagePullPolicy: "IfNotPresent"
+    command: "python3"
+    args: "checks.py"
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-socket-volume
+    - mountPath: /usr/bin/docker
+      name: docker-bin-volume
+  restartPolicy: OnFailure
+  backoffLimit: 4

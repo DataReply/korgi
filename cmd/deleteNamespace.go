@@ -26,9 +26,10 @@ import (
 
 // deleteNamespaceCmd represents the namespace command
 var deleteNamespaceCmd = &cobra.Command{
-	Use:   "delete-namespace",
-	Short: "Namespace apply",
-	Args:  cobra.ExactArgs(1),
+	Use:     "namespace",
+	Aliases: []string{"ns"},
+	Short:   "Namespace apply",
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		askForConfirmation, _ := cmd.Flags().GetBool("ask-for-confirmation")
@@ -73,9 +74,5 @@ var deleteNamespaceCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(deleteNamespaceCmd)
-
-	deleteNamespaceCmd.Flags().BoolP("lint", "l", false, "Lint temlate")
-	deleteNamespaceCmd.Flags().BoolP("dry-run", "d", false, "Dry Run")
-
+	deleteCmd.AddCommand(deleteNamespaceCmd)
 }

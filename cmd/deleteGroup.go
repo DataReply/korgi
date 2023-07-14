@@ -16,17 +16,39 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
-// syncReposCmd represents the delete command
-var syncReposCmd = &cobra.Command{
-	Use:   "sync-repos",
-	Short: "Sync repositories listed in a state file, primarily useful for Helmfile",
+func deleteAppGroup(group string, namespace string, appFilter string) error {
+	if appFilter != "" {
+		err := kappEngine.DeleteApp(group+"-"+appFilter, namespace)
+		if err != nil {
+			return fmt.Errorf("kapp app delete: %w", err)
+		}
+		return nil
+	}
+
+	err := kappEngine.DeleteGroup(group, namespace)
+	if err != nil {
+		return fmt.Errorf("kapp group delete: %w", err)
+	}
+	return nil
+}
+
+// deleteCmd represents the delete command
+var deleteGroupCmd = &cobra.Command{
+	Use:   "group",
+	Short: "Delete app group or app",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		group := args[0]
 
-		err := helmfileEngine.SyncRepos(args[0])
+		namespace, _ := cmd.Flags().GetString("namespace")
+
+		appFilter, _ := cmd.Flags().GetString("app")
+
+		err := deleteAppGroup(group, namespace, appFilter)
 		if err != nil {
 			return err
 		}
@@ -36,5 +58,5 @@ var syncReposCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(syncReposCmd)
+	deleteCmd.AddCommand(deleteGroupCmd)
 }

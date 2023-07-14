@@ -1,0 +1,15 @@
+---
+values:
+  - imagePullPolicy: Always
+  - imageVersion: "latest"
+  - dockerSecret: "auth"
+  - namespaceDeployServiceAccount: 'default-ns-sa'
+
+
+environments:
+  default:
+    values:
+      - tmp: "tmp"
+  dev:
+    values:
+      - kubeContext: "kubernetes-admin@cluster.local"

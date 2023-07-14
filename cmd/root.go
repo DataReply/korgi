@@ -90,11 +90,12 @@ func init() {
 
 	rootCmd.PersistentFlags().StringP("output-dir", "o", "/tmp/kapp", "Working directory")
 	rootCmd.PersistentFlags().BoolP("isolate", "i", true, "By default all output is isolated by appending the time in the following format 2006-01-02/15-04:05")
-	rootCmd.PersistentFlags().StringP("app", "a", "", "only include this app")
+	rootCmd.PersistentFlags().StringP("app", "a", "", "Deploy a single app which typically belongs to an app-group.")
 	rootCmd.PersistentFlags().StringP("template-engine", "t", "helmfile", "[Depreceated] can only be filefile")
 
 	rootCmd.PersistentFlags().Bool("skip-deps", false, "Skip pulling helm dependencies")
 	rootCmd.PersistentFlags().Bool("diff-run", false, "Only show kapp diffs")
+
 
 	rootCmd.PersistentFlags().StringArray("kapp-args", []string{}, "Execution engine extra args")
 	rootCmd.PersistentFlags().StringArray("helmfile-args", []string{}, "Template engine extra args")

@@ -1,15 +1,19 @@
-PROJECT_NAME  := korgi
-SHELL         := /usr/bin/env bash
-
+PROJECT_NAME:=korgi
+GOFILES:=$(shell find . -name '*.go' | grep -v -E '(./vendor)')
 OS            := $(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH          := amd64
 LDFLAGS       := -w -s
 SRC           := $(shell find . -type f -name '*.go' -print)
 REPO          := github.com/DataReply/korgi
- 
-bin: $(SRC)
+
+run:
+	go run main.go
+
+all: clean check bin
+
+bin: $(GOFILES)
 	mkdir -p  bin/${OS}/
-	GOOS=${OS} GOARCH=${ARCH} go build -ldflags "${LDFLAGS}" -o bin/${OS}/korgi main.go
+	GOOS=${OS} GOARCH=${ARCH} go build -a -tags musl -ldflags "$(LDFLAGS)" -o bin/${OS}/korgi main.go
 
 gofmt:
 	gofmt -w -s pkg/
@@ -32,7 +36,4 @@ clean:
 run:
 	go run main.go
 
-all: clean check bin
-
 .PHONY: all
-
