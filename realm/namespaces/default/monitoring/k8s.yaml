@@ -1,0 +1,19 @@
+bases:
+- ../../_defaults.yaml
+- ../../../values/env/dev/{{.Environment.Values.namespace}}/values.yaml
+
+releases:
+  - name: dummy
+    chart: incubator/raw  
+    version: 0.2.3
+    values:
+    - templates:
+      - |
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: dummy
+    
+   
+  
+    
