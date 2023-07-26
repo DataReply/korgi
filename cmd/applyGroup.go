@@ -81,7 +81,7 @@ func applyAppGroup(group string, namespace string, outputDir string, appFilter s
 	for _, matchedAppFile := range matches {
 		appFile := filepath.Base(matchedAppFile)
 		if appFile != "_app_group.yaml" {
-			app := utils.SanitizeAppName(appFile)
+			app := utils.SanitizeAppName(appFile, match)
 			if appFilter != "" {
 
 				if app != appFilter {
